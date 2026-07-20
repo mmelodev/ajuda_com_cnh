@@ -1,0 +1,61 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", "Segoe UI", system-ui, sans-serif;
+
+  /* Traffic-inspired palette */
+  --color-asphalt-950: #0b0e14;
+  --color-asphalt-900: #12161f;
+  --color-asphalt-800: #1a2030;
+  --color-asphalt-700: #262e42;
+  --color-asphalt-600: #384158;
+  --color-asphalt-400: #6b7690;
+  --color-asphalt-200: #c3cadb;
+
+  --color-signal-red: #e2231a;
+  --color-signal-red-dark: #a8160f;
+  --color-signal-yellow: #ffcc00;
+  --color-signal-yellow-dark: #c99a00;
+  --color-signal-green: #0aa860;
+  --color-signal-green-dark: #067a46;
+  --color-signal-blue: #0072ce;
+  --color-signal-blue-dark: #00509a;
+  --color-signal-brown: #7a4a1e;
+  --color-signal-white: #f5f7fa;
+}
+
+html {
+  color-scheme: dark;
+}
+
+body {
+  margin: 0;
+  background-color: var(--color-asphalt-950);
+  color: var(--color-signal-white);
+  -webkit-tap-highlight-color: transparent;
+  overscroll-behavior-y: none;
+  font-family: var(--font-sans);
+}
+
+#root {
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-thumb {
+  background-color: var(--color-asphalt-600);
+  border-radius: 999px;
+}
+
+.road-dashes {
+  background-image: repeating-linear-gradient(
+    90deg,
+    var(--color-signal-yellow) 0 18px,
+    transparent 18px 32px
+  );
+}
