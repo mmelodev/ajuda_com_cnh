@@ -39,7 +39,7 @@ export default function FeaturedSignQuiz() {
       </div>
 
       <div className="mb-4 flex flex-col items-center gap-2 rounded-xl bg-asphalt-950/60 py-6">
-        <SignIcon sign={sign} size={104} />
+        <SignIcon key={sign.id} sign={sign} size={104} />
         {sign.code && (
           <span className="rounded-full bg-asphalt-800 px-2 py-0.5 text-[11px] font-semibold text-asphalt-400">
             {sign.code}

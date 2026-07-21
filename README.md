@@ -50,8 +50,10 @@ preenchidos depois.
   - **Quiz** — sessão de quiz configurável (10/15/20 perguntas) sorteada de um **banco grande e
     gerado dinamicamente**, com opções embaralhadas a cada tentativa, feedback imediato por
     pergunta e placar final.
-- **Ícones das placas 100% vetoriais**, desenhados em SVG a partir da forma, cor e categoria
-  oficiais de cada placa (não há dependência de imagens externas/assets baixados).
+- **Ícones fiéis às placas reais**: Regulamentação e Advertência usam reproduções vetoriais
+  oficiais (CONTRAN) baixadas do Wikimedia Commons; quando um arquivo não está disponível, ou
+  para Indicação (sem pictograma oficial único), o ícone é desenhado proceduralmente em SVG a
+  partir da forma, cor e categoria da placa.
 - Tema visual escuro "asfalto" com cores vibrantes de sinalização (vermelho, amarelo, verde e
   azul), pensado para leitura rápida em celular.
 
@@ -150,6 +152,12 @@ src/
         ├── ModuleHome.tsx             # Aba "Aprender"
         ├── Catalog.tsx                # Aba "Catálogo"
         └── Quiz.tsx                   # Aba "Quiz"
+
+public/
+└── signs/
+    ├── README.md                  # Fonte e licença das imagens oficiais
+    ├── regulamentacao/*.svg       # Placas R-* reais (Wikimedia Commons)
+    └── advertencia/*.svg          # Placas A-* reais (Wikimedia Commons)
 ```
 
 ---
@@ -196,6 +204,9 @@ interface TrafficSign {
 
 - `description` e `action` alimentam diretamente as perguntas do quiz — são o texto que aparece
   nas alternativas de "O que esta placa significa?" e "Qual é a atitude correta?".
+- Em placas de Regulamentação/Advertência, o `code` também é usado para resolver a imagem oficial
+  em `public/signs/{categoria}/{code}.svg` (ver seção seguinte) — por isso ele precisa bater
+  exatamente com o nome do arquivo salvo naquela pasta.
 - `signsByCategory`, `CATEGORY_LABEL`, `CATEGORY_DESCRIPTION`, `SHAPE_LABEL`, `getSignById` e
   `getRandomSign` (todos em `src/data/signs/index.ts`) são os helpers usados pelo resto do app —
   prefira importar deles em vez de mexer direto nos arrays de cada categoria.
@@ -204,22 +215,30 @@ interface TrafficSign {
 
 ## Como os ícones das placas são desenhados
 
-Não há imagens reais das placas do DENATRAN no projeto — os ícones são **gerados
-proceduralmente em SVG** por [`SignIcon.tsx`](src/components/signs/SignIcon.tsx), a partir dos
-campos `shape`, `category`, `variant`/`tone` e `glyph` de cada placa:
+[`SignIcon.tsx`](src/components/signs/SignIcon.tsx) usa uma estratégia híbrida:
 
-1. `shapeClipAndFrame()` desenha o contorno oficial (octógono vermelho do PARE, triângulo do "Dê
-   a preferência", círculo com anel vermelho para placas restritivas, círculo azul para placas
-   mandatórias, losango amarelo para advertência, retângulo colorido por `tone` para indicação).
-2. `GlyphInner` desenha o pictograma central, escolhido pela chave `glyph` (seta, curva, bicicleta,
-   ônibus, pedestre, cruzamento, semáforo, texto, etc.) — os pictogramas reutilizáveis ficam em
-   [`glyphs.tsx`](src/components/signs/glyphs.tsx) e suportam `glyphRotate`/`glyphMirror` para
-   cobrir variações de direção (esquerda/direita) sem duplicar SVG.
-3. Um `<clipPath>` recorta o glifo para dentro do contorno da placa, evitando que texto/ícones
-   longos vazem para fora da forma.
+1. **Imagem oficial (preferencial)** — para placas de **Regulamentação** e **Advertência** (que
+   seguem um pictograma único e padronizado pelo CONTRAN), o componente tenta carregar um SVG real
+   em `public/signs/{regulamentacao|advertencia}/{código}.svg` (ex.: `public/signs/regulamentacao/R-1.svg`).
+   Esses arquivos são reproduções vetoriais baixadas do **Wikimedia Commons** — não são gerados
+   pelo app. Veja a fonte e a licença em [`public/signs/README.md`](public/signs/README.md).
+2. **Fallback procedural** — se o arquivo não existir (`<img onError>`) ou para placas de
+   **Indicação** (que não têm um pictograma oficial único, já que na vida real são
+   majoritariamente texto livre — nome de rodovia, distância, serviço), o ícone é **desenhado em
+   SVG proceduralmente**, a partir dos campos `shape`, `category`, `variant`/`tone` e `glyph` de
+   cada placa:
+   - `shapeClipAndFrame()` desenha o contorno (octógono vermelho do PARE, triângulo do "Dê a
+     preferência", círculo com anel vermelho para placas restritivas, círculo azul para
+     mandatórias, losango amarelo para advertência, retângulo colorido por `tone` para indicação).
+   - `GlyphInner` desenha o pictograma central pela chave `glyph` (seta, curva, bicicleta, ônibus,
+     pedestre, cruzamento, semáforo, texto, etc.) — os pictogramas reutilizáveis ficam em
+     [`glyphs.tsx`](src/components/signs/glyphs.tsx) e suportam `glyphRotate`/`glyphMirror` para
+     cobrir variações de direção sem duplicar SVG.
+   - Um `<clipPath>` recorta o glifo para dentro do contorno, evitando que texto/ícones longos
+     vazem para fora da forma.
 
-Essa abordagem prioriza **reconhecer forma + cor + significado** (o que realmente cai na prova),
-não a fidelidade pixel a pixel com a arte oficial do DENATRAN.
+Ou seja: **quando existe uma imagem oficial baixada, ela é sempre priorizada**; o desenho
+procedural é só uma rede de segurança (e o caminho principal para Indicação).
 
 ---
 
@@ -260,7 +279,12 @@ perguntas e a ordem das alternativas **mudam a cada visita/tentativa**, mesmo pa
 2. Copie um objeto existente parecido e ajuste `id`, `code`, `name`, `shape`
    (e `variant`/`tone` quando fizer sentido), `glyph` (veja as opções em `GlyphKey` dentro de
    `src/types.ts` e os componentes disponíveis em `glyphs.tsx`), `description` e `action`.
-3. Não é necessário tocar em nada mais — o catálogo, as estatísticas da Home do módulo e o banco
+3. Se for uma placa de Regulamentação ou Advertência, procure `Brasil {code}.svg` no
+   [Wikimedia Commons](https://commons.wikimedia.org/wiki/Category:SVG_regulatory_road_signs_of_Brazil)
+   (ou na categoria de advertência) e salve o arquivo como `public/signs/{categoria}/{code}.svg`
+   — o app passa a usar essa imagem oficial automaticamente. Se não encontrar o arquivo, sem
+   problema: o app cai de volta para o ícone desenhado em SVG.
+4. Não é necessário tocar em mais nada — o catálogo, as estatísticas da Home do módulo e o banco
    de perguntas usam os arrays automaticamente via `src/data/signs/index.ts`.
 
 ## Como adicionar um novo módulo de aprendizado
@@ -305,3 +329,8 @@ Conteúdo produzido para **estudo pessoal**, sem fins comerciais. As descriçõe
 elaboradas a partir de material de referência público e do Código de Trânsito Brasileiro (CTB),
 mas podem conter imprecisões — sempre confira o material oficial do DETRAN do seu estado e o
 Manual Brasileiro de Sinalização de Trânsito (CONTRAN) antes da prova.
+
+As imagens das placas de Regulamentação e Advertência em `public/signs/` são reproduções de
+terceiros hospedadas no Wikimedia Commons (majoritariamente CC BY-SA 3.0) — ver
+[`public/signs/README.md`](public/signs/README.md) para a fonte e a licença de cada uma antes de
+qualquer redistribuição.

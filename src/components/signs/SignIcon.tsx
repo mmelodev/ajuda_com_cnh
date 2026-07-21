@@ -1,4 +1,4 @@
-import { useId } from "react";
+import { useId, useState } from "react";
 import type { TrafficSign } from "../../types";
 import {
   ArrowForkGlyph,
@@ -343,7 +343,20 @@ function iconTextColor(sign: TrafficSign) {
   return "#111827";
 }
 
-export default function SignIcon({ sign, size = 72, className = "" }: SignIconProps) {
+/**
+ * Regulamentação and advertência signs follow a strict official pictogram
+ * (CONTRAN). For those we prefer a real vector reproduction (sourced from
+ * Wikimedia Commons, see public/signs/README.md) over our hand-drawn
+ * approximation. Indicação signs have no single "official" artwork (they're
+ * mostly free text), so those always use the procedural renderer.
+ */
+function officialAssetPath(sign: TrafficSign): string | null {
+  if (!sign.code) return null;
+  if (sign.category !== "regulamentacao" && sign.category !== "advertencia") return null;
+  return `/signs/${sign.category}/${sign.code}.svg`;
+}
+
+function ProceduralSignIcon({ sign, size, className }: Required<Pick<SignIconProps, "sign" | "size" | "className">>) {
   const reactId = useId();
   const clipId = `sign-clip-${reactId}`;
 
@@ -365,4 +378,25 @@ export default function SignIcon({ sign, size = 72, className = "" }: SignIconPr
       </g>
     </svg>
   );
+}
+
+export default function SignIcon({ sign, size = 72, className = "" }: SignIconProps) {
+  const [imageFailed, setImageFailed] = useState(false);
+  const assetPath = officialAssetPath(sign);
+
+  if (assetPath && !imageFailed) {
+    return (
+      <img
+        src={assetPath}
+        alt={sign.name}
+        width={size}
+        height={size}
+        className={className}
+        style={{ objectFit: "contain" }}
+        onError={() => setImageFailed(true)}
+      />
+    );
+  }
+
+  return <ProceduralSignIcon sign={sign} size={size} className={className} />;
 }
