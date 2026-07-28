@@ -16,9 +16,10 @@ const modules: LearningModule[] = [
     title: "Sinalização Horizontal",
     shortLabel: "Pintura no chão",
     description: "Linhas, faixas, setas e símbolos pintados na pista.",
-    status: "soon",
+    status: "available",
     accent: "yellow",
     emoji: "🛣️",
+    path: "/sinalizacao-horizontal",
   },
   {
     id: "sinalizacao-semaforica",

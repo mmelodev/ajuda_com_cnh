@@ -41,7 +41,7 @@ function questionForTemplate(
       );
       return {
         id: `${sign.id}-meaning-${uid()}`,
-        signId: sign.id,
+        refId: sign.id,
         prompt: "O que esta placa significa?",
         options,
       };
@@ -53,7 +53,7 @@ function questionForTemplate(
       );
       return {
         id: `${sign.id}-action-${uid()}`,
-        signId: sign.id,
+        refId: sign.id,
         prompt: "Ao avistar esta placa, qual é a atitude correta?",
         options,
       };
@@ -65,7 +65,7 @@ function questionForTemplate(
       );
       return {
         id: `${sign.id}-name-${uid()}`,
-        signId: sign.id,
+        refId: sign.id,
         prompt: "Como se chama esta placa?",
         options,
       };
@@ -76,7 +76,7 @@ function questionForTemplate(
       const options = buildOptions(correctLabel, allLabels);
       return {
         id: `${sign.id}-category-${uid()}`,
-        signId: sign.id,
+        refId: sign.id,
         prompt: "A qual categoria de sinalização esta placa pertence?",
         options,
       };
@@ -87,7 +87,7 @@ function questionForTemplate(
       const options = buildOptions(correctLabel, allLabels);
       return {
         id: `${sign.id}-shape-${uid()}`,
-        signId: sign.id,
+        refId: sign.id,
         prompt: "Qual é o formato desta placa?",
         options,
       };
@@ -119,8 +119,8 @@ export function sampleQuizSession(count: number, signs: TrafficSign[] = allSigns
 
   for (const question of pool) {
     if (selected.length >= count) break;
-    if (seen.has(question.signId)) continue;
-    seen.add(question.signId);
+    if (seen.has(question.refId)) continue;
+    seen.add(question.refId);
     selected.push(question);
   }
 

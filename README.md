@@ -5,11 +5,11 @@ teórica da CNH (categorias **A/B**) e para dirigir com mais segurança. O app o
 aprendizado em módulos (um por assunto da prova) e, em cada módulo, oferece um **catálogo de
 consulta** e um **quiz com banco de perguntas randomizado**.
 
-O primeiro módulo implementado é **Sinalização Vertical** (placas de Regulamentação,
-Advertência e Indicação). Os demais módulos (Sinalização Horizontal, Semafórica, Direção
-Defensiva, Primeiros Socorros, Meio Ambiente e Cidadania, Mecânica Básica e Legislação de
-Trânsito) já existem na tela inicial como "Em breve" e seguem a mesma arquitetura para serem
-preenchidos depois.
+Módulos implementados até agora: **Sinalização Vertical** (placas de Regulamentação, Advertência
+e Indicação) e **Sinalização Horizontal** (linhas, faixas e inscrições no pavimento). Os demais
+módulos (Semafórica e Gestual, Direção Defensiva, Primeiros Socorros, Meio Ambiente e Cidadania,
+Mecânica Básica e Legislação de Trânsito) já existem na tela inicial como "Em breve" e seguem a
+mesma arquitetura para serem preenchidos depois.
 
 > ⚠️ Projeto de estudo pessoal. O conteúdo foi escrito com base em material de referência público
 > (curso "CNH do Brasil" do gov.br) e no Código de Trânsito Brasileiro, mas **não substitui** o
@@ -25,11 +25,12 @@ preenchidos depois.
 - [Scripts disponíveis](#scripts-disponíveis)
 - [Estrutura de pastas](#estrutura-de-pastas)
 - [Roteamento](#roteamento)
-- [Modelo de dados das placas](#modelo-de-dados-das-placas)
-- [Como os ícones das placas são desenhados](#como-os-ícones-das-placas-são-desenhados)
+- [Sinalização Vertical: modelo de dados das placas](#sinalização-vertical-modelo-de-dados-das-placas)
+- [Sinalização Vertical: como os ícones são desenhados](#sinalização-vertical-como-os-ícones-são-desenhados)
+- [Sinalização Horizontal: modelo de dados das marcações](#sinalização-horizontal-modelo-de-dados-das-marcações)
+- [Sinalização Horizontal: como os ícones são desenhados](#sinalização-horizontal-como-os-ícones-são-desenhados)
 - [Banco de perguntas](#banco-de-perguntas)
-- [Como adicionar uma nova placa](#como-adicionar-uma-nova-placa)
-- [Como adicionar um novo módulo de aprendizado](#como-adicionar-um-novo-módulo-de-aprendizado)
+- [Como adicionar conteúdo novo](#como-adicionar-conteúdo-novo)
 - [Design / identidade visual](#design--identidade-visual)
 - [Roadmap](#roadmap)
 - [Aviso legal](#aviso-legal)
@@ -40,20 +41,22 @@ preenchidos depois.
 
 - **Home** com cards de todas as etapas do aprendizado; módulos disponíveis levam para o
   conteúdo, módulos futuros aparecem como "Em breve".
-- **Módulo Sinalização Vertical**, com navegação por abas fixas no rodapé (padrão de app mobile):
-  - **Aprender** — estatísticas por categoria + bloco **"Placa em destaque"**: uma placa sorteada
-    aleatoriamente com **4 perguntas de múltipla escolha** sobre ela (significado, atitude
-    correta, nome e formato). Botão para sortear outra placa a qualquer momento.
-  - **Catálogo** — lista **completa** das placas de Regulamentação, Advertência e Indicação
-    (103 placas no total), com busca por nome/código e filtro por categoria. Cada item expande
-    para mostrar o significado e a atitude correta ao avistar a placa.
-  - **Quiz** — sessão de quiz configurável (10/15/20 perguntas) sorteada de um **banco grande e
-    gerado dinamicamente**, com opções embaralhadas a cada tentativa, feedback imediato por
-    pergunta e placar final.
-- **Ícones fiéis às placas reais**: Regulamentação e Advertência usam reproduções vetoriais
-  oficiais (CONTRAN) baixadas do Wikimedia Commons; quando um arquivo não está disponível, ou
-  para Indicação (sem pictograma oficial único), o ícone é desenhado proceduralmente em SVG a
-  partir da forma, cor e categoria da placa.
+- Cada módulo disponível tem navegação por abas fixas no rodapé (padrão de app mobile):
+  - **Aprender** — estatísticas do módulo + bloco de destaque com um item sorteado
+    aleatoriamente e **4 perguntas de múltipla escolha** sobre ele. Botão para sortear outro item
+    a qualquer momento.
+  - **Catálogo** — lista **completa** do conteúdo do módulo, com busca e (na Sinalização
+    Vertical) filtro por categoria. Cada item expande para mostrar o significado e a atitude
+    correta.
+  - **Quiz** — sessão configurável (10/15/20 perguntas) sorteada de um **banco gerado
+    dinamicamente**, com opções embaralhadas a cada tentativa, feedback imediato por pergunta e
+    placar final.
+- **Sinalização Vertical**: 103 placas (31 Regulamentação + 55 Advertência + 17 Indicação).
+  Regulamentação e Advertência usam **reproduções vetoriais oficiais (CONTRAN)** baixadas do
+  Wikimedia Commons; o restante é desenhado proceduralmente em SVG.
+- **Sinalização Horizontal**: 13 marcações de solo (linhas de fluxo por cor/padrão, faixa de
+  pedestres, linha de retenção, inscrição "PARE", área de cruzamento, canalização, faixa
+  exclusiva, setas direcionais), todas desenhadas proceduralmente como uma pista vista de cima.
 - Tema visual escuro "asfalto" com cores vibrantes de sinalização (vermelho, amarelo, verde e
   azul), pensado para leitura rápida em celular.
 
@@ -70,8 +73,8 @@ preenchidos depois.
 | Roteamento   | [React Router v7](https://reactrouter.com) (`HashRouter`) |
 | Lint         | [oxlint](https://oxc.rs)                       |
 
-Não há backend, banco de dados ou serviços externos — todo o conteúdo (placas e perguntas) é
-código/dados estáticos em TypeScript, e o app roda inteiramente no navegador.
+Não há backend, banco de dados ou serviços externos — todo o conteúdo (placas, marcações e
+perguntas) é código/dados estáticos em TypeScript, e o app roda inteiramente no navegador.
 
 ---
 
@@ -120,7 +123,7 @@ src/
 ├── App.tsx                        # Definição das rotas (HashRouter)
 ├── main.tsx                       # Entry point React
 ├── index.css                      # Import do Tailwind + tema de cores (@theme)
-├── types.ts                       # Tipos centrais (TrafficSign, QuizQuestion, LearningModule...)
+├── types.ts                       # Tipos centrais (TrafficSign, RoadMarking, QuizQuestion...)
 │
 ├── data/
 │   ├── modules.ts                 # Lista dos módulos de aprendizado exibidos na Home
@@ -129,29 +132,42 @@ src/
 │   │   ├── advertencia.ts         # 55 placas de Advertência (série A)
 │   │   ├── indicacao.ts           # 17 placas de Indicação (azul/verde/branca/marrom)
 │   │   └── index.ts               # Agrega tudo + helpers (getSignById, getRandomSign, labels)
+│   ├── markings/
+│   │   ├── horizontal.ts          # 13 marcações de Sinalização Horizontal
+│   │   └── index.ts               # Helpers (getMarkingById, getRandomMarking, labels)
 │   └── questions/
-│       └── generateQuestions.ts   # Gerador de perguntas de múltipla escolha a partir das placas
+│       ├── generateQuestions.ts         # Gerador de perguntas para as placas verticais
+│       └── generateMarkingQuestions.ts  # Gerador de perguntas para as marcações horizontais
 │
 ├── components/
 │   ├── layout/
 │   │   └── RootLayout.tsx         # Moldura mobile-first (container centralizado tipo "app")
 │   ├── home/
 │   │   ├── ModuleCard.tsx         # Card de módulo na Home
-│   │   └── FeaturedSignQuiz.tsx   # Bloco "Placa em destaque" (imagem + 4 perguntas)
+│   │   ├── FeaturedSignQuiz.tsx   # Bloco "Placa em destaque" (Sinalização Vertical)
+│   │   └── FeaturedMarkingQuiz.tsx # Bloco "Marcação em destaque" (Sinalização Horizontal)
 │   ├── quiz/
-│   │   └── QuestionBlock.tsx      # Uma pergunta com 4 alternativas + feedback visual
-│   └── signs/
-│       ├── SignIcon.tsx           # Desenha a placa (forma + cor + glifo) em SVG
-│       ├── glyphs.tsx             # Biblioteca de "pictogramas" SVG reutilizáveis
-│       └── SignCard.tsx           # Item de placa no catálogo (expansível)
+│   │   └── QuestionBlock.tsx      # Uma pergunta com 4 alternativas + feedback visual (genérico)
+│   ├── signs/
+│   │   ├── SignIcon.tsx           # Desenha a placa (forma + cor + glifo, ou SVG oficial)
+│   │   ├── glyphs.tsx             # Biblioteca de "pictogramas" SVG reutilizáveis
+│   │   └── SignCard.tsx           # Item de placa no catálogo (expansível)
+│   └── markings/
+│       ├── MarkingIcon.tsx        # Desenha a marcação como uma pista vista de cima
+│       └── MarkingCard.tsx        # Item de marcação no catálogo (expansível)
 │
 └── pages/
     ├── Home.tsx                   # Página inicial
-    └── verticalSignage/
-        ├── VerticalSignageLayout.tsx  # Header + abas (Aprender/Catálogo/Quiz)
-        ├── ModuleHome.tsx             # Aba "Aprender"
-        ├── Catalog.tsx                # Aba "Catálogo"
-        └── Quiz.tsx                   # Aba "Quiz"
+    ├── verticalSignage/
+    │   ├── VerticalSignageLayout.tsx  # Header + abas (Aprender/Catálogo/Quiz)
+    │   ├── ModuleHome.tsx             # Aba "Aprender"
+    │   ├── Catalog.tsx                # Aba "Catálogo"
+    │   └── Quiz.tsx                   # Aba "Quiz"
+    └── horizontalSignage/
+        ├── HorizontalSignageLayout.tsx
+        ├── ModuleHome.tsx
+        ├── Catalog.tsx
+        └── Quiz.tsx
 
 public/
 └── signs/
@@ -167,19 +183,22 @@ public/
 O app usa `HashRouter` (rotas com `#/...`) para funcionar em qualquer hospedagem estática sem
 configuração de fallback de servidor. Rotas atuais:
 
-| Rota                                | Página                                    |
-| ------------------------------------ | ------------------------------------------ |
-| `#/`                                  | `pages/Home.tsx`                            |
-| `#/sinalizacao-vertical`              | `pages/verticalSignage/ModuleHome.tsx`      |
-| `#/sinalizacao-vertical/catalogo`     | `pages/verticalSignage/Catalog.tsx`         |
-| `#/sinalizacao-vertical/quiz`         | `pages/verticalSignage/Quiz.tsx`            |
+| Rota                                    | Página                                        |
+| ---------------------------------------- | ---------------------------------------------- |
+| `#/`                                      | `pages/Home.tsx`                                |
+| `#/sinalizacao-vertical`                  | `pages/verticalSignage/ModuleHome.tsx`          |
+| `#/sinalizacao-vertical/catalogo`         | `pages/verticalSignage/Catalog.tsx`             |
+| `#/sinalizacao-vertical/quiz`             | `pages/verticalSignage/Quiz.tsx`                |
+| `#/sinalizacao-horizontal`                | `pages/horizontalSignage/ModuleHome.tsx`        |
+| `#/sinalizacao-horizontal/catalogo`       | `pages/horizontalSignage/Catalog.tsx`           |
+| `#/sinalizacao-horizontal/quiz`           | `pages/horizontalSignage/Quiz.tsx`              |
 
-Essas três últimas rotas são filhas de `VerticalSignageLayout`, que desenha o cabeçalho do módulo
-e a barra de abas fixa no rodapé.
+As rotas de cada módulo são filhas do respectivo `*SignageLayout`, que desenha o cabeçalho e a
+barra de abas fixa no rodapé.
 
 ---
 
-## Modelo de dados das placas
+## Sinalização Vertical: modelo de dados das placas
 
 Cada placa é um objeto `TrafficSign` (definido em [`src/types.ts`](src/types.ts)):
 
@@ -213,7 +232,7 @@ interface TrafficSign {
 
 ---
 
-## Como os ícones das placas são desenhados
+## Sinalização Vertical: como os ícones são desenhados
 
 [`SignIcon.tsx`](src/components/signs/SignIcon.tsx) usa uma estratégia híbrida:
 
@@ -242,10 +261,59 @@ procedural é só uma rede de segurança (e o caminho principal para Indicação
 
 ---
 
+## Sinalização Horizontal: modelo de dados das marcações
+
+Cada marcação é um objeto `RoadMarking` (também em [`src/types.ts`](src/types.ts)):
+
+```ts
+interface RoadMarking {
+  id: string;
+  name: string;
+  color?: MarkingColor;     // "branca" | "amarela" | "vermelha" (só quando visual === "line")
+  pattern?: LinePattern;    // "continua" | "tracejada" | "dupla-continua" | "mista"
+  visual: MarkingVisual;    // "line" | "crosswalk" | "text" | "arrow" | "hatched"
+                             // | "exclusive-lane" | "retention-line"
+  visualText?: string;      // texto pintado no chão quando visual === "text" (ex.: "PARE")
+  description: string;      // o que a marcação significa
+  action: string;           // qual a atitude correta do motorista
+}
+```
+
+Diferente das placas, as marcações horizontais não têm um catálogo numerado oficial amplamente
+memorizado (R-1, A-14 etc.) — o que importa para a prova é reconhecer **cor** e **padrão da
+linha**. Por isso o dado central aqui é `color` + `pattern` (para as 6 linhas de fluxo) ou apenas
+`visual` (para faixa de pedestres, linha de retenção, inscrições, área de cruzamento, canalização,
+faixa exclusiva e setas). Os dados ficam em
+[`src/data/markings/horizontal.ts`](src/data/markings/horizontal.ts) e os helpers/labels em
+[`src/data/markings/index.ts`](src/data/markings/index.ts).
+
+---
+
+## Sinalização Horizontal: como os ícones são desenhados
+
+Não existem reproduções vetoriais "oficiais" reaproveitáveis para marcações de solo (elas são
+recortes de uma pista, não um pictograma isolado como as placas), então
+[`MarkingIcon.tsx`](src/components/markings/MarkingIcon.tsx) sempre desenha uma pista em SVG
+(retângulo escuro arredondado, vista de cima) e pinta o padrão de acordo com `visual`:
+
+- `line` — uma ou duas linhas verticais, sólidas e/ou tracejadas, na cor de `color`.
+- `crosswalk` — faixas brancas horizontais (zebra).
+- `retention-line` — uma barra branca grossa perpendicular ao sentido da via.
+- `text` — o texto de `visualText` (ex.: "PARE") centralizado.
+- `hatched` — hachura diagonal (área de cruzamento / canalização).
+- `exclusive-lane` — preenchimento colorido + pictograma de ônibus (reaproveita `BusGlyph` de
+  `glyphs.tsx`).
+- `arrow` — seta direcional (reaproveita `ArrowGlyph` de `glyphs.tsx`).
+
+---
+
 ## Banco de perguntas
 
-O gerador vive em [`src/data/questions/generateQuestions.ts`](src/data/questions/generateQuestions.ts)
-e cria perguntas a partir de **5 templates** aplicados a cada placa:
+Cada módulo tem seu próprio gerador, mas os dois seguem a mesma lógica: montar um pool grande a
+partir de templates de pergunta aplicados a cada item, sortear distratores da mesma "família" e
+embaralhar tudo a cada chamada.
+
+### Sinalização Vertical — [`generateQuestions.ts`](src/data/questions/generateQuestions.ts)
 
 | Template   | Pergunta                                                   | Fonte da resposta certa |
 | ---------- | ----------------------------------------------------------- | ------------------------ |
@@ -255,24 +323,37 @@ e cria perguntas a partir de **5 templates** aplicados a cada placa:
 | `category` | "A qual categoria de sinalização esta placa pertence?"        | `CATEGORY_LABEL`          |
 | `shape`    | "Qual é o formato desta placa?"                                | `SHAPE_LABEL`              |
 
-Para cada pergunta, os 3 distratores são sorteados de outras placas da **mesma categoria**
-(cai para todas as placas se a categoria tiver poucas opções), e a ordem das 4 alternativas é
-embaralhada. Funções principais:
-
-- `generateQuestionPool(signs)` — monta o pool completo (placas × templates), com distratores e
-  ordem novos a cada chamada.
-- `sampleQuizSession(count, signs)` — embaralha o pool e sorteia `count` perguntas, priorizando
-  placas distintas (só repete placa se `count` for maior que o número de placas disponíveis).
+- `generateQuestionPool(signs)` — monta o pool completo (placas × templates).
+- `sampleQuizSession(count, signs)` — sorteia `count` perguntas, priorizando placas distintas.
   Usada pela aba **Quiz**.
 - `fourQuestionsForSign(sign, signs)` — gera exatamente as 4 perguntas (`meaning`, `action`,
   `name`, `shape`) sobre uma única placa. Usada pelo bloco **"Placa em destaque"**.
 
-Como tudo é recalculado (com `Math.random()`) a cada vez que essas funções são chamadas, as
-perguntas e a ordem das alternativas **mudam a cada visita/tentativa**, mesmo para a mesma placa.
+### Sinalização Horizontal — [`generateMarkingQuestions.ts`](src/data/questions/generateMarkingQuestions.ts)
+
+| Template   | Pergunta                                                | Fonte da resposta certa | Disponível quando |
+| ---------- | ---------------------------------------------------------- | ------------------------ | ------------------ |
+| `meaning`  | "O que essa marcação no chão significa?"                     | `marking.description`    | sempre |
+| `action`   | "Diante dessa marcação, qual é a atitude correta?"           | `marking.action`         | sempre |
+| `name`     | "Como se chama essa marcação?"                                | `marking.name`           | sempre |
+| `color`    | "Qual a cor dessa linha?"                                      | `COLOR_LABEL`             | só linhas (`color` definido) |
+| `pattern`  | "Que tipo de linha é essa?"                                     | `PATTERN_LABEL`           | só linhas (`pattern` definido) |
+| `visual`   | "Como essa marcação se apresenta no pavimento?"                 | `VISUAL_LABEL`            | sempre |
+
+- `generateMarkingQuestionPool(markings)` / `sampleMarkingQuizSession(count, markings)` — mesma
+  lógica da versão vertical, usada pela aba **Quiz**.
+- `fourQuestionsForMarking(marking, markings)` — usa `color`/`pattern` como 4ª pergunta quando a
+  marcação é uma linha, ou `visual` quando não é (faixa de pedestres, texto, hachurado etc.), para
+  sempre entregar exatamente 4 perguntas relevantes.
+
+Como tudo é recalculado (com `Math.random()`) a cada chamada, as perguntas e a ordem das
+alternativas **mudam a cada visita/tentativa**, mesmo para o mesmo item.
 
 ---
 
-## Como adicionar uma nova placa
+## Como adicionar conteúdo novo
+
+**Nova placa (Sinalização Vertical):**
 
 1. Abra o arquivo da categoria correta em `src/data/signs/` (`regulamentacao.ts`,
    `advertencia.ts` ou `indicacao.ts`).
@@ -287,13 +368,21 @@ perguntas e a ordem das alternativas **mudam a cada visita/tentativa**, mesmo pa
 4. Não é necessário tocar em mais nada — o catálogo, as estatísticas da Home do módulo e o banco
    de perguntas usam os arrays automaticamente via `src/data/signs/index.ts`.
 
-## Como adicionar um novo módulo de aprendizado
+**Nova marcação (Sinalização Horizontal):**
+
+1. Abra [`src/data/markings/horizontal.ts`](src/data/markings/horizontal.ts).
+2. Adicione um objeto `RoadMarking`: escolha `visual` (o "molde" de desenho — veja a lista na
+   seção acima) e, se for uma linha, `color`/`pattern`; preencha `name`, `description` e `action`.
+3. Pronto — catálogo, quiz e o bloco de destaque usam o array automaticamente via
+   `src/data/markings/index.ts`.
+
+**Novo módulo de aprendizado:**
 
 1. Adicione uma entrada em `src/data/modules.ts` com `status: "soon"` (ela já aparece na Home).
-2. Quando o conteúdo estiver pronto, replique a pasta `src/pages/verticalSignage/` como modelo
-   (layout com abas + página de catálogo + página de quiz), crie os dados equivalentes a
-   `src/data/signs/` para o novo assunto, registre as rotas em `App.tsx` e mude o `status` do
-   módulo para `"available"` com o `path` correspondente.
+2. Quando o conteúdo estiver pronto, replique a pasta `src/pages/horizontalSignage/` (o exemplo
+   mais simples, sem categorias nem imagens externas) como modelo — layout com abas + página de
+   catálogo + página de quiz —, crie os dados equivalentes em `src/data/`, registre as rotas em
+   `App.tsx` e mude o `status` do módulo para `"available"` com o `path` correspondente.
 
 ---
 
@@ -312,7 +401,8 @@ perguntas e a ordem das alternativas **mudam a cada visita/tentativa**, mesmo pa
 
 ## Roadmap
 
-- [ ] Sinalização Horizontal
+- [x] Sinalização Vertical
+- [x] Sinalização Horizontal
 - [ ] Sinalização Semafórica e Gestual
 - [ ] Direção Defensiva
 - [ ] Primeiros Socorros
@@ -325,12 +415,13 @@ perguntas e a ordem das alternativas **mudam a cada visita/tentativa**, mesmo pa
 
 ## Aviso legal
 
-Conteúdo produzido para **estudo pessoal**, sem fins comerciais. As descrições das placas foram
-elaboradas a partir de material de referência público e do Código de Trânsito Brasileiro (CTB),
-mas podem conter imprecisões — sempre confira o material oficial do DETRAN do seu estado e o
-Manual Brasileiro de Sinalização de Trânsito (CONTRAN) antes da prova.
+Conteúdo produzido para **estudo pessoal**, sem fins comerciais. As descrições das placas e
+marcações foram elaboradas a partir de material de referência público e do Código de Trânsito
+Brasileiro (CTB), mas podem conter imprecisões — sempre confira o material oficial do DETRAN do
+seu estado e o Manual Brasileiro de Sinalização de Trânsito (CONTRAN) antes da prova.
 
 As imagens das placas de Regulamentação e Advertência em `public/signs/` são reproduções de
 terceiros hospedadas no Wikimedia Commons (majoritariamente CC BY-SA 3.0) — ver
 [`public/signs/README.md`](public/signs/README.md) para a fonte e a licença de cada uma antes de
-qualquer redistribuição.
+qualquer redistribuição. Os ícones da Sinalização Horizontal são 100% desenhados pelo app, sem
+dependência de imagens de terceiros.

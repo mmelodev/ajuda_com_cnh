@@ -92,9 +92,38 @@ export interface QuizOption {
 
 export interface QuizQuestion {
   id: string;
-  signId: string;
+  /** id of the TrafficSign or RoadMarking this question is about */
+  refId: string;
   prompt: string;
   options: QuizOption[];
+}
+
+// ---- Sinalização Horizontal ----
+
+export type MarkingColor = "branca" | "amarela" | "vermelha";
+
+export type LinePattern = "continua" | "tracejada" | "dupla-continua" | "mista";
+
+export type MarkingVisual =
+  | "line"
+  | "crosswalk"
+  | "text"
+  | "arrow"
+  | "hatched"
+  | "exclusive-lane"
+  | "retention-line";
+
+export interface RoadMarking {
+  id: string;
+  name: string;
+  /** Only relevant for visual === "line" */
+  color?: MarkingColor;
+  /** Only relevant for visual === "line" */
+  pattern?: LinePattern;
+  visual: MarkingVisual;
+  visualText?: string;
+  description: string;
+  action: string;
 }
 
 export type ModuleStatus = "available" | "soon";

@@ -1,8 +1,8 @@
 import { useState } from "react";
-import SignIcon from "../../components/signs/SignIcon";
+import MarkingIcon from "../../components/markings/MarkingIcon";
 import QuestionBlock from "../../components/quiz/QuestionBlock";
-import { sampleQuizSession } from "../../data/questions/generateQuestions";
-import { getSignById } from "../../data/signs";
+import { sampleMarkingQuizSession } from "../../data/questions/generateMarkingQuestions";
+import { getMarkingById } from "../../data/markings";
 import type { QuizQuestion } from "../../types";
 
 const LENGTH_OPTIONS = [10, 15, 20];
@@ -19,7 +19,7 @@ export default function Quiz() {
   const [lastCorrect, setLastCorrect] = useState<boolean | null>(null);
 
   const startQuiz = () => {
-    setQuestions(sampleQuizSession(length));
+    setQuestions(sampleMarkingQuizSession(length));
     setIndex(0);
     setScore(0);
     setAnswered(false);
@@ -48,12 +48,12 @@ export default function Quiz() {
       <div className="flex flex-col gap-5 px-4 py-6">
         <div className="rounded-2xl border border-asphalt-700 bg-asphalt-900 p-5 text-center">
           <span className="text-4xl" aria-hidden>
-            🚦
+            🛣️
           </span>
-          <h2 className="mt-3 text-lg font-bold text-signal-white">Quiz de Sinalização Vertical</h2>
+          <h2 className="mt-3 text-lg font-bold text-signal-white">Quiz de Sinalização Horizontal</h2>
           <p className="mt-2 text-sm text-asphalt-300">
-            As perguntas e alternativas são sorteadas de um banco grande a cada tentativa — quanto
-            mais você jogar, mais placas diferentes vai revisar.
+            As perguntas e alternativas são sorteadas de um banco a cada tentativa — quanto mais
+            você jogar, mais marcações diferentes vai revisar.
           </p>
         </div>
 
@@ -127,7 +127,7 @@ export default function Quiz() {
   }
 
   const question = questions[index];
-  const sign = getSignById(question.refId);
+  const marking = getMarkingById(question.refId);
 
   return (
     <div className="flex flex-col gap-4 px-4 py-5">
@@ -148,14 +148,9 @@ export default function Quiz() {
         </div>
       </div>
 
-      {sign && (
+      {marking && (
         <div className="flex flex-col items-center gap-2 rounded-xl bg-asphalt-900 py-6">
-          <SignIcon key={sign.id} sign={sign} size={100} />
-          {sign.code && (
-            <span className="rounded-full bg-asphalt-800 px-2 py-0.5 text-[11px] font-semibold text-asphalt-400">
-              {sign.code}
-            </span>
-          )}
+          <MarkingIcon marking={marking} size={80} />
         </div>
       )}
 
@@ -163,9 +158,10 @@ export default function Quiz() {
 
       {answered && (
         <div className="space-y-2">
-          {lastCorrect === false && sign && (
+          {lastCorrect === false && marking && (
             <p className="rounded-xl bg-asphalt-900 px-3.5 py-2.5 text-xs text-asphalt-300">
-              💡 <span className="font-semibold text-signal-white">{sign.name}:</span> {sign.action}
+              💡 <span className="font-semibold text-signal-white">{marking.name}:</span>{" "}
+              {marking.action}
             </p>
           )}
           <button
