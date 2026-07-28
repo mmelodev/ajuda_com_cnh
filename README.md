@@ -6,10 +6,11 @@ aprendizado em módulos (um por assunto da prova) e, em cada módulo, oferece um
 consulta** e um **quiz com banco de perguntas randomizado**.
 
 Módulos implementados até agora: **Sinalização Vertical** (placas de Regulamentação, Advertência
-e Indicação) e **Sinalização Horizontal** (linhas, faixas e inscrições no pavimento). Os demais
-módulos (Semafórica e Gestual, Direção Defensiva, Primeiros Socorros, Meio Ambiente e Cidadania,
-Mecânica Básica e Legislação de Trânsito) já existem na tela inicial como "Em breve" e seguem a
-mesma arquitetura para serem preenchidos depois.
+e Indicação), **Sinalização Horizontal** (linhas, faixas e inscrições no pavimento) e **Direção
+Defensiva** (erros comuns, atitude correta e a consequência real — infração, pontos, multa ou
+crime — de cada situação). Os demais módulos (Semafórica e Gestual, Primeiros Socorros, Meio
+Ambiente e Cidadania, Mecânica Básica e Legislação de Trânsito) já existem na tela inicial como
+"Em breve" e seguem a mesma arquitetura para serem preenchidos depois.
 
 > ⚠️ Projeto de estudo pessoal. O conteúdo foi escrito com base em material de referência público
 > (curso "CNH do Brasil" do gov.br) e no Código de Trânsito Brasileiro, mas **não substitui** o
@@ -29,6 +30,7 @@ mesma arquitetura para serem preenchidos depois.
 - [Sinalização Vertical: como os ícones são desenhados](#sinalização-vertical-como-os-ícones-são-desenhados)
 - [Sinalização Horizontal: modelo de dados das marcações](#sinalização-horizontal-modelo-de-dados-das-marcações)
 - [Sinalização Horizontal: como os ícones são desenhados](#sinalização-horizontal-como-os-ícones-são-desenhados)
+- [Direção Defensiva: modelo de dados das situações](#direção-defensiva-modelo-de-dados-das-situações)
 - [Banco de perguntas](#banco-de-perguntas)
 - [Como adicionar conteúdo novo](#como-adicionar-conteúdo-novo)
 - [Design / identidade visual](#design--identidade-visual)
@@ -57,6 +59,10 @@ mesma arquitetura para serem preenchidos depois.
 - **Sinalização Horizontal**: 13 marcações de solo (linhas de fluxo por cor/padrão, faixa de
   pedestres, linha de retenção, inscrição "PARE", área de cruzamento, canalização, faixa
   exclusiva, setas direcionais), todas desenhadas proceduralmente como uma pista vista de cima.
+- **Direção Defensiva**: 50 situações do dia a dia (excesso de velocidade, celular ao volante,
+  cinto, faixa de pedestres, estacionamento indevido, regras específicas de moto, crimes de
+  trânsito etc.), cada uma com o erro comum, a atitude correta e a consequência real —
+  gravidade/pontos/multa quando é uma infração classificada, ou a pena quando também é crime.
 - Tema visual escuro "asfalto" com cores vibrantes de sinalização (vermelho, amarelo, verde e
   azul), pensado para leitura rápida em celular.
 
@@ -135,9 +141,13 @@ src/
 │   ├── markings/
 │   │   ├── horizontal.ts          # 13 marcações de Sinalização Horizontal
 │   │   └── index.ts               # Helpers (getMarkingById, getRandomMarking, labels)
+│   ├── defensive/
+│   │   ├── topics.ts              # 50 situações de Direção Defensiva
+│   │   └── index.ts               # Helpers (getTopicById, getRandomTopic, labels/cores de gravidade)
 │   └── questions/
-│       ├── generateQuestions.ts         # Gerador de perguntas para as placas verticais
-│       └── generateMarkingQuestions.ts  # Gerador de perguntas para as marcações horizontais
+│       ├── generateQuestions.ts           # Gerador de perguntas para as placas verticais
+│       ├── generateMarkingQuestions.ts    # Gerador de perguntas para as marcações horizontais
+│       └── generateDefensiveQuestions.ts  # Gerador de perguntas para Direção Defensiva
 │
 ├── components/
 │   ├── layout/
@@ -145,16 +155,19 @@ src/
 │   ├── home/
 │   │   ├── ModuleCard.tsx         # Card de módulo na Home
 │   │   ├── FeaturedSignQuiz.tsx   # Bloco "Placa em destaque" (Sinalização Vertical)
-│   │   └── FeaturedMarkingQuiz.tsx # Bloco "Marcação em destaque" (Sinalização Horizontal)
+│   │   ├── FeaturedMarkingQuiz.tsx # Bloco "Marcação em destaque" (Sinalização Horizontal)
+│   │   └── FeaturedDefensiveQuiz.tsx # Bloco "Situação em destaque" (Direção Defensiva)
 │   ├── quiz/
 │   │   └── QuestionBlock.tsx      # Uma pergunta com 4 alternativas + feedback visual (genérico)
 │   ├── signs/
 │   │   ├── SignIcon.tsx           # Desenha a placa (forma + cor + glifo, ou SVG oficial)
 │   │   ├── glyphs.tsx             # Biblioteca de "pictogramas" SVG reutilizáveis
 │   │   └── SignCard.tsx           # Item de placa no catálogo (expansível)
-│   └── markings/
-│       ├── MarkingIcon.tsx        # Desenha a marcação como uma pista vista de cima
-│       └── MarkingCard.tsx        # Item de marcação no catálogo (expansível)
+│   ├── markings/
+│   │   ├── MarkingIcon.tsx        # Desenha a marcação como uma pista vista de cima
+│   │   └── MarkingCard.tsx        # Item de marcação no catálogo (expansível)
+│   └── defensive/
+│       └── SituationCard.tsx      # Item de situação no catálogo (expansível, com badge de gravidade)
 │
 └── pages/
     ├── Home.tsx                   # Página inicial
@@ -163,8 +176,13 @@ src/
     │   ├── ModuleHome.tsx             # Aba "Aprender"
     │   ├── Catalog.tsx                # Aba "Catálogo"
     │   └── Quiz.tsx                   # Aba "Quiz"
-    └── horizontalSignage/
-        ├── HorizontalSignageLayout.tsx
+    ├── horizontalSignage/
+    │   ├── HorizontalSignageLayout.tsx
+    │   ├── ModuleHome.tsx
+    │   ├── Catalog.tsx
+    │   └── Quiz.tsx
+    └── defensiveDriving/
+        ├── DefensiveDrivingLayout.tsx
         ├── ModuleHome.tsx
         ├── Catalog.tsx
         └── Quiz.tsx
@@ -192,9 +210,13 @@ configuração de fallback de servidor. Rotas atuais:
 | `#/sinalizacao-horizontal`                | `pages/horizontalSignage/ModuleHome.tsx`        |
 | `#/sinalizacao-horizontal/catalogo`       | `pages/horizontalSignage/Catalog.tsx`           |
 | `#/sinalizacao-horizontal/quiz`           | `pages/horizontalSignage/Quiz.tsx`              |
+| `#/direcao-defensiva`                     | `pages/defensiveDriving/ModuleHome.tsx`         |
+| `#/direcao-defensiva/catalogo`            | `pages/defensiveDriving/Catalog.tsx`            |
+| `#/direcao-defensiva/quiz`                | `pages/defensiveDriving/Quiz.tsx`               |
 
-As rotas de cada módulo são filhas do respectivo `*SignageLayout`, que desenha o cabeçalho e a
-barra de abas fixa no rodapé.
+As rotas de cada módulo são filhas do respectivo layout (`VerticalSignageLayout`,
+`HorizontalSignageLayout`, `DefensiveDrivingLayout`), que desenha o cabeçalho e a barra de abas
+fixa no rodapé.
 
 ---
 
@@ -307,6 +329,37 @@ recortes de uma pista, não um pictograma isolado como as placas), então
 
 ---
 
+## Direção Defensiva: modelo de dados das situações
+
+Diferente dos outros dois módulos, aqui não há uma placa ou marcação para desenhar — o conteúdo é
+comportamental: uma situação do trânsito, o erro comum, a atitude correta e a consequência real.
+Cada item é um objeto `DefensiveTopic` (em [`src/types.ts`](src/types.ts)):
+
+```ts
+interface DefensiveTopic {
+  id: string;
+  title: string;
+  emoji: string;               // usado no lugar de um ícone SVG (não há pictograma oficial aqui)
+  severity?: InfractionSeverity;  // "leve" | "media" | "grave" | "gravissima", só quando é uma infração classificada
+  points?: number;              // pontos somados na CNH, quando aplicável
+  fine?: string;                // valor da multa (ou nota tipo "multa multiplicada por 5x")
+  crimePenalty?: string;        // preenchido quando o comportamento também é crime de trânsito
+  mistake: string;              // o erro comum
+  correctAction: string;        // a atitude do condutor defensivo
+  whyItMatters: string;         // a consequência/motivo real
+}
+```
+
+- Nem toda situação tem `severity`/`points`/`fine` — várias são atitudes de risco (ex.: dirigir
+  cansado, não acionar o freio de mão) sem uma infração numerada associada no material de origem;
+  nesses casos os campos ficam `undefined` em vez de um valor inventado.
+- `SEVERITY_LABEL` e `SEVERITY_COLOR` (em `src/data/defensive/index.ts`) alimentam o badge colorido
+  de gravidade no catálogo (amarelo → laranja → laranja escuro → vermelho, do `leve` ao
+  `gravissima`).
+- Os dados ficam em [`src/data/defensive/topics.ts`](src/data/defensive/topics.ts).
+
+---
+
 ## Banco de perguntas
 
 Cada módulo tem seu próprio gerador, mas os dois seguem a mesma lógica: montar um pool grande a
@@ -346,6 +399,22 @@ embaralhar tudo a cada chamada.
   marcação é uma linha, ou `visual` quando não é (faixa de pedestres, texto, hachurado etc.), para
   sempre entregar exatamente 4 perguntas relevantes.
 
+### Direção Defensiva — [`generateDefensiveQuestions.ts`](src/data/questions/generateDefensiveQuestions.ts)
+
+| Template        | Pergunta                                                        | Fonte da resposta certa | Disponível quando |
+| ---------------- | ------------------------------------------------------------------ | ------------------------ | ------------------ |
+| `title`          | "A qual situação do trânsito essa dica se refere?"                   | `topic.title`             | sempre |
+| `mistake`        | "Qual é o erro comum relacionado a '{title}'?"                       | `topic.mistake`           | sempre |
+| `correctAction`  | "Diante de '{title}', qual é a atitude do condutor defensivo?"       | `topic.correctAction`     | sempre |
+| `whyItMatters`   | "Por que '{title}' é uma preocupação real no trânsito?"              | `topic.whyItMatters`      | sempre |
+| `severity`       | "Qual a gravidade da infração '{title}'?"                            | `SEVERITY_LABEL`          | só quando `severity` definido |
+| `points`         | "Quantos pontos '{title}' soma na CNH?"                              | `topic.points`            | só quando `points` definido |
+
+- `generateDefensiveQuestionPool(topics)` / `sampleDefensiveQuizSession(count, topics)` — mesma
+  lógica dos outros dois módulos, usada pela aba **Quiz**.
+- `fourQuestionsForTopic(topic, topics)` — sempre usa os 4 templates universais (`title`,
+  `mistake`, `correctAction`, `whyItMatters`), já que `severity`/`points` nem sempre existem.
+
 Como tudo é recalculado (com `Math.random()`) a cada chamada, as perguntas e a ordem das
 alternativas **mudam a cada visita/tentativa**, mesmo para o mesmo item.
 
@@ -376,6 +445,16 @@ alternativas **mudam a cada visita/tentativa**, mesmo para o mesmo item.
 3. Pronto — catálogo, quiz e o bloco de destaque usam o array automaticamente via
    `src/data/markings/index.ts`.
 
+**Nova situação (Direção Defensiva):**
+
+1. Abra [`src/data/defensive/topics.ts`](src/data/defensive/topics.ts).
+2. Adicione um objeto `DefensiveTopic`: `title`, `emoji`, `mistake`, `correctAction` e
+   `whyItMatters` são obrigatórios; `severity`/`points`/`fine` só quando a situação corresponde a
+   uma infração classificada com esses valores confirmados na fonte, e `crimePenalty` só quando
+   também é crime de trânsito. Não invente números — deixe o campo de fora se a fonte não os der.
+3. Pronto — catálogo, quiz e o bloco de destaque usam o array automaticamente via
+   `src/data/defensive/index.ts`.
+
 **Novo módulo de aprendizado:**
 
 1. Adicione uma entrada em `src/data/modules.ts` com `status: "soon"` (ela já aparece na Home).
@@ -392,7 +471,8 @@ alternativas **mudam a cada visita/tentativa**, mesmo para o mesmo item.
   topo da Home, remetendo a uma pista de rolamento.
 - Paleta de sinalização (`--color-signal-*`): vermelho (regulamentação/perigo), amarelo
   (advertência/atenção), verde (indicação de direção/acerto), azul (indicação de
-  serviço/obrigatoriedade) e marrom (turístico).
+  serviço/obrigatoriedade) e marrom (turístico). `orange` e `deep-orange` foram adicionados para a
+  escada de gravidade de infrações em Direção Defensiva (leve → média → grave → gravíssima).
 - Layout mobile-first: em telas largas, o conteúdo permanece limitado a `max-w-md` e centralizado
   (efeito de "moldura de celular"), em vez de esticar para a largura toda do desktop.
 - Navegação por abas fixas no rodapé dentro de cada módulo, no padrão de app nativo.
@@ -403,8 +483,8 @@ alternativas **mudam a cada visita/tentativa**, mesmo para o mesmo item.
 
 - [x] Sinalização Vertical
 - [x] Sinalização Horizontal
+- [x] Direção Defensiva
 - [ ] Sinalização Semafórica e Gestual
-- [ ] Direção Defensiva
 - [ ] Primeiros Socorros
 - [ ] Meio Ambiente e Cidadania
 - [ ] Mecânica Básica

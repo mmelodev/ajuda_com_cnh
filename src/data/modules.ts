@@ -35,9 +35,10 @@ const modules: LearningModule[] = [
     title: "Direção Defensiva",
     shortLabel: "Segurança",
     description: "Atitudes e técnicas para prevenir sinistros de trânsito.",
-    status: "soon",
+    status: "available",
     accent: "blue",
     emoji: "🛡️",
+    path: "/direcao-defensiva",
   },
   {
     id: "primeiros-socorros",

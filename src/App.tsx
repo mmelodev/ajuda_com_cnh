@@ -9,6 +9,10 @@ import HorizontalSignageLayout from "./pages/horizontalSignage/HorizontalSignage
 import HorizontalModuleHome from "./pages/horizontalSignage/ModuleHome";
 import HorizontalCatalog from "./pages/horizontalSignage/Catalog";
 import HorizontalQuiz from "./pages/horizontalSignage/Quiz";
+import DefensiveDrivingLayout from "./pages/defensiveDriving/DefensiveDrivingLayout";
+import DefensiveModuleHome from "./pages/defensiveDriving/ModuleHome";
+import DefensiveCatalog from "./pages/defensiveDriving/Catalog";
+import DefensiveQuiz from "./pages/defensiveDriving/Quiz";
 
 function App() {
   return (
@@ -25,6 +29,11 @@ function App() {
             <Route index element={<HorizontalModuleHome />} />
             <Route path="catalogo" element={<HorizontalCatalog />} />
             <Route path="quiz" element={<HorizontalQuiz />} />
+          </Route>
+          <Route path="direcao-defensiva" element={<DefensiveDrivingLayout />}>
+            <Route index element={<DefensiveModuleHome />} />
+            <Route path="catalogo" element={<DefensiveCatalog />} />
+            <Route path="quiz" element={<DefensiveQuiz />} />
           </Route>
         </Route>
       </Routes>

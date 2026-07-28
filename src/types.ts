@@ -126,6 +126,27 @@ export interface RoadMarking {
   action: string;
 }
 
+// ---- Direção Defensiva ----
+
+export type InfractionSeverity = "leve" | "media" | "grave" | "gravissima";
+
+export interface DefensiveTopic {
+  id: string;
+  title: string;
+  emoji: string;
+  /** Only set when the topic corresponds to a specific classified infraction */
+  severity?: InfractionSeverity;
+  /** Pontos somados na CNH, quando se trata de uma infração pontuada */
+  points?: number;
+  /** Valor da multa, quando aplicável, ex.: "R$ 293,47" */
+  fine?: string;
+  /** Preenchido quando o comportamento também é crime de trânsito (CTB/Código Penal) */
+  crimePenalty?: string;
+  mistake: string;
+  correctAction: string;
+  whyItMatters: string;
+}
+
 export type ModuleStatus = "available" | "soon";
 
 export interface LearningModule {
